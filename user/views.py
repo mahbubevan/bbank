@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views import generic
 from . models import User
+
+from . forms import UserForm
 # Create your views here.
 
 # List View Here
@@ -16,15 +18,16 @@ class UserDetailView(generic.DetailView):
     model = User
 
 
-class UserCreateView(generic.CreateView):
+class UserCreateView(generic.FormView):
     template_name = 'user/create_user.html'
-    model = User
-    fields = [
-            'name',
-            'email', 'password', 'location',
-            'blood_group','age','gender',
-            'status', 'helping_count',
-        ]
+    form_class = UserForm
+    success_url = reverse_lazy('user:list')
+
+    def form_valid(self,form):
+        # form.send_email()
+        self.object = form.save()
+        return super().form_valid(form)
+
 
 
 class UserUpdateView(generic.UpdateView):
